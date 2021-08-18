@@ -4,7 +4,7 @@ namespace BIGBotZabbix
 {
     class TelegramAPI
     {
-        const string API_URL = "https://api.telegram.org/bot" + AppSettings.BotToken + "/";
+        readonly string API_URL = "https://api.telegram.org/bot" + AppSettings.BotToken + "/";
 
         public string sendAPIRequest(string _apiMethod, string _params)
         {
