@@ -26,9 +26,14 @@ namespace BIGBotZabbix
                     foreach (AE.Net.Mail.MailMessage m in mm)
                     {
                         MailCount++;
-                        if (m.From.ToString().Contains("Zabbix"))
+                        if (m.From.ToString().Contains(AppSettings.SpecialFromWord))
                         {
                             Mails.Add(m.Body);
+                            ic.DeleteMessage(m);
+                        }
+                        if (m.Subject.ToString().Contains(AppSettings.SpecialSubjectWord))
+                        {
+                            Mails.Add(m.Subject);
                             ic.DeleteMessage(m);
                         }
                         else

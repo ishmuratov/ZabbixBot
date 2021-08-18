@@ -18,6 +18,8 @@ namespace BIGBotZabbix
         // Application settings
         public static string Version = "1.0.4";
         public static string AccessPassword = "password";
+        public static string SpecialFromWord = "Zabbix";
+        public static string SpecialSubjectWord = "Critical";
 
         static AppSettings()
         {
@@ -44,6 +46,23 @@ namespace BIGBotZabbix
                 MailCheckDelay = result;
                 string[] AccessPasswordRaw = dataSettings[12].Split('=');
                 AccessPassword = AccessPasswordRaw[1];
+                string[] SpecialFromWordRaw = dataSettings[13].Split('=');
+                SpecialFromWord = SpecialFromWordRaw[1];
+                string[] SpecialSubjectWordRaw = dataSettings[14].Split('=');
+                SpecialSubjectWord = SpecialSubjectWordRaw[1];
+            }
+            CheckSettings();
+        }
+
+        static void CheckSettings()
+        {
+            if (string.IsNullOrEmpty(SpecialFromWord) || (string.IsNullOrWhiteSpace(SpecialFromWord)))
+            {
+                SpecialFromWord = "Zabbix";
+            }
+            if (string.IsNullOrEmpty(SpecialSubjectWord) || (string.IsNullOrWhiteSpace(SpecialSubjectWord)))
+            {
+                SpecialFromWord = "Critical";
             }
         }
     }
