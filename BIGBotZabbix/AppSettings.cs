@@ -56,6 +56,10 @@ namespace BIGBotZabbix
 
         static void CheckSettings()
         {
+            if (MailCheckDelay < 30000)
+            {
+                MailCheckDelay = 30000;
+            }
             if (string.IsNullOrEmpty(SpecialFromWord) || (string.IsNullOrWhiteSpace(SpecialFromWord)))
             {
                 SpecialFromWord = "Zabbix";
