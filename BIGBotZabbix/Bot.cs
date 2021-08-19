@@ -168,8 +168,9 @@ namespace BIGBotZabbix
             {
                 string result = Users.Delete(deleteId);
                 SendMessage(result, AppSettings.AdminID);
+                return true;
             }
-            return true;
+            return false;
         }
 
         private bool PingCommand(User _newUser, string _text)
