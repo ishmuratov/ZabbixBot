@@ -115,62 +115,82 @@ namespace BIGBotZabbix
 
             if (_text.ToLower().Contains("info"))
             {
-                string msg = $"Members:\n";
-                foreach (User anyUser in Users.GetUsers())
-                {
-                    msg += $"{anyUser.ID} - {anyUser.FirstName} {anyUser.LastName}\n";
-                }
-                SendMessage($"{msg}", AppSettings.AdminID);
-                return true;
+                return InfoCommand();
             }
 
             // password for new users
 
             if (_text.Contains(AppSettings.AccessPassword))
             {
-                string result = Users.Add(_newUser);
-                SendMessage(result, _newUser.ID);
-                return true;
+                return AccessCommand(_newUser);
             }
 
             // delete member
 
             if (_text.ToLower().Contains("delete "))
             {
-                _text = _text.Replace("delete ", String.Empty);
-                int deleteId = 0;
-                bool tryDelete = int.TryParse(_text, out deleteId);
-                if (tryDelete)
-                {
-                    string result = Users.Delete(deleteId);
-                    SendMessage(result, AppSettings.AdminID);
-                    return true;
-                }
+                return DeleteCommand(_text);
             }
 
             // Ping host
 
             if (_text.ToLower().Contains("ping "))
             {
-                Host tmpHost = new Host(BotHelpers.GetHostNamefromText(_text));
-                if (tmpHost.IP != string.Empty)
+                return PingCommand(_newUser, _text);
+            }
+            return false;
+        }
+
+        private bool InfoCommand()
+        {
+            string msg = $"Members:\n";
+            foreach (User anyUser in Users.GetUsers())
+            {
+                msg += $"{anyUser.ID} - {anyUser.FirstName} {anyUser.LastName}\n";
+            }
+            SendMessage($"{msg}", AppSettings.AdminID);
+            return true;
+        }
+
+        private bool AccessCommand(User _newUser)
+        {
+            string result = Users.Add(_newUser);
+            SendMessage(result, _newUser.ID);
+            return true;
+        }
+
+        private bool DeleteCommand(string _text)
+        {
+            _text = _text.Replace("delete ", String.Empty);
+            int deleteId = 0;
+            bool tryDelete = int.TryParse(_text, out deleteId);
+            if (tryDelete)
+            {
+                string result = Users.Delete(deleteId);
+                SendMessage(result, AppSettings.AdminID);
+            }
+            return true;
+        }
+
+        private bool PingCommand(User _newUser, string _text)
+        {
+            Host tmpHost = new Host(BotHelpers.GetHostNamefromText(_text));
+            if (tmpHost.IP != string.Empty)
+            {
+                if (Pinger.PingHost(tmpHost))
                 {
-                    if (Pinger.PingHost(tmpHost))
-                    {
-                        SendMessage($"Ping host <{tmpHost.IP}> - OK! Time: {tmpHost.pingTime} ms.", _newUser.ID);
-                    }
-                    else
-                    {
-                        SendMessage($"Ping host <{tmpHost.IP}> - FAIL!", _newUser.ID);
-                    }
+                    SendMessage($"Ping host <{tmpHost.IP}> - OK! Time: {tmpHost.pingTime} ms.", _newUser.ID);
                 }
                 else
                 {
-                    SendMessage($"Неверный формат команды PING.", _newUser.ID);
+                    SendMessage($"Ping host <{tmpHost.IP}> - FAIL!", _newUser.ID);
                 }
-                return true;
             }
-            return false;
+            else
+            {
+                SendMessage($"Неверный формат команды PING.", _newUser.ID);
+            }
+            return true;
         }
     }
 }
